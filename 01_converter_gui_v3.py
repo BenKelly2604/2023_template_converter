@@ -1,4 +1,5 @@
 from tkinter import *
+from functools import partial  # To prevent unwanted windows
 
 
 class Converter:
@@ -48,7 +49,6 @@ class Converter:
         error = "Please enter a number"
         self.output_label = Label(self.temp_frame, text="",
                                   fg="#9C0000")
-        self.temp_error.grid(row=3)
 
         # Conversion, help and history / export buttons
         self.button_frame = Frame(self.temp_frame)
@@ -67,14 +67,16 @@ class Converter:
                                            bg="#009900",
                                            fg=button_fg,
                                            font=button_font, width=12,
-                                           command=lambda: self.temp_converter(-459))
+                                           command=lambda: self.temp_convert(-459))
         self.to_fahrenheit_button.grid(row=0, column=1, padx=5, pady=5)
 
         self.to_help_button = Button(self.button_frame,
                                      text="Help / Info",
                                      bg="#CC6600",
                                      fg=button_fg,
-                                     font=button_font, width=12)
+                                     font=button_font,
+                                     width=12,
+                                     command=self.to_help)
         self.to_help_button.grid(row=1, column=0, padx=5, pady=5)
 
         self.to_history_button = Button(self.button_frame,
@@ -181,6 +183,57 @@ class Converter:
             self.temp_entry.config(bg="#FFFFFF")
 
         self.output_label.config(text=output)
+
+    def to_help(self):
+        DisplayHelp(self)
+
+
+class DisplayHelp:
+
+    def __init__(self, partner):
+
+        # setup dialogue box and background colour
+        background = "#ffe6cc"
+        self.help_box = Toplevel()
+
+        # disable help button
+        partner.to_help_button.config(state=DISABLED)
+
+        # If users press cross at top, closes help and
+        # 'releases' help button
+        self.help_box.protocol('WM_DELETE_WINDOW',
+                               partial(self.close_help, partner))
+
+        self.help_frame = Frame(self.help_box, width=300,
+                                height=200,
+                                bg=background)
+        self.help_frame.grid()
+
+        self.help_heading_label = Label(self.help_frame, bg=background,
+                                        text="Help / Info",
+                                        font=("Arial", "14", "bold"))
+        self.help_heading_label.grid(row=0)
+
+        help_text = "To use the video 11 2:18"
+
+        self.help_text_label = Label(self.help_frame, bg=background,
+                                     text=help_text, wrap=350,
+                                     justify="left")
+        self.help_text_label.grid(row=1, padx=10)
+
+        self.dismiss_button = Button(self.help_frame,
+                                     font=("Arial", "12", "bold"),
+                                     text="Dismiss", bg="#CC6600",
+                                     fg="#FFFFFF",
+                                     command=partial(self.close_help,
+                                                     partner))
+        self.dismiss_button.grid(row=2, padx=10, pady=10)
+
+    # closes help dialogue (used by button and x at top of dialogue)
+    def close_help(self, partner):
+        # put help button back to normal...
+        partner.to_help_button.config(state=NORMAL)
+        self.help_box.destroy()
 
 
 # main routine
