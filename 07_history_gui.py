@@ -29,11 +29,15 @@ class Converter:
 
         self.to_history_button = Button(self.button_frame,
                                         text="history",
-                                        bg="#CC6600",
+                                        bg="#004C99",
                                         fg=button_fg,
                                         font=button_font, width=12,
+                                        state=DISABLED,
                                         command=self.to_history)
-        self.to_history_button.grid(row=1, column=0, padx=5, pady=5)
+        self.to_history_button.grid(row=1, column=1, padx=5, pady=5)
+
+        # **** Remove when integrating !! ***
+        self.to_history_button.config(state=NORMAL)
 
     def to_history(self):
         DisplayHistory(self)
@@ -56,29 +60,54 @@ class DisplayHistory:
                                   partial(self.close_history, partner))
 
         self.history_frame = Frame(self.history_box, width=300,
-                                   height=200,
-                                   bg=background)
+                                   height=200
+                                   )
         self.history_frame.grid()
 
         self.history_heading_label = Label(self.history_frame, bg=background,
-                                           text="history",
-                                           font=("Arial", "14", "bold"))
+                                           text="history / Export",
+                                           font=("Arial", "16", "bold"))
         self.history_heading_label.grid(row=0)
 
-        history_text = "To use the video 11 2:18"
+        # History text and label
+        history_text = "Below are your recent calculations - " \
+                       "showing 3 / 3 calculations. " \
+                       " All calculations are shown to the nearest degree"
+        self.text_instructions_label = Label(self.history_frame,
+                                             text=history_text,
+                                             width=45, justify="left",
+                                             wraplength=300,
+                                             padx=10, pady=10)
+        self.text_instructions_label.grid(row=1)
 
-        self.history_text_label = Label(self.history_frame, bg=background,
-                                        text=history_text, wraplength=350,
-                                        justify="left")
-        self.history_text_label.grid(row=1, padx=10)
+        self.all_calcs_label = Label(self.history_frame,
+                                     text="calculations go here",
+                                     padx=10, pady=10, bg="#ffe6cc",
+                                     width=40, justify="left")
+        self.all_calcs_label.grid(row=2)
 
-        self.dismiss_button = Button(self.history_frame,
-                                     font=("Arial", "12", "bold"),
-                                     text="Dismiss", bg="#CC6600",
-                                     fg="#FFFFFF",
-                                     command=partial(self.close_history,
-                                                     partner))
-        self.dismiss_button.grid(row=2, padx=10, pady=10)
+        # instructions for saving files
+        save_text = "Either choose a custom file name (and push " \
+                    "<Export>) or simply push <Export> to save your " \
+                    "calculations in a text file. If the " \
+                    "filename already exists, it will be overwritten!"
+        self.save_instructions_label = Label(self.history_frame,
+                                             text=save_text,
+                                             justify="left", width=40,
+                                             padx=10, pady=10)
+        self.save_instructions_label.grid(row=3)
+
+        # Filename entry widget, white background to start
+        self.filename_entry = Entry(self.history_frame,
+                                    font=("Arial", "14"),
+                                    bg="#FFFFFF", width=25)
+        self.filename_error_label.grid(row=4, padx=10, pady=10)
+
+        self.filename_error_label = Label(self.history_frame,
+                                          text="Filename error goes here",
+                                          fg="#9C0000",
+                                          font=("Arial", "12", "bold"))
+        self.filename_error_label.grid(row=5)
 
     # closes history dialogue (used by button and x at top of dialogue)
     def close_history(self, partner):
